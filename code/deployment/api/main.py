@@ -1,16 +1,19 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
 import numpy as np
 
-# Load the CatBoost model
-model_path = '../../models/catboost_student_performance_model.pkl'
+# Load the CatBoost model and scaler
+model_path = 'models/catboost_student_performance_model.pkl'
 model = joblib.load(model_path)
+
+scaler_path = 'models/scaler.pkl'
+scaler = joblib.load(scaler_path)
 
 # Initialize FastAPI app
 app = FastAPI()
 
-# Define the input data format
+# Define the input data format with 19 features
 class StudentPerformanceInput(BaseModel):
     Hours_Studied: int
     Attendance: int
@@ -32,7 +35,7 @@ class StudentPerformanceInput(BaseModel):
     Gender: int
     Exam_Score: int
 
-# Define the prediction endpoint
+
 @app.post("/predict")
 def predict_performance(data: StudentPerformanceInput):
     input_data = np.array([[
@@ -43,5 +46,16 @@ def predict_performance(data: StudentPerformanceInput):
         data.Parental_Education_Level, data.Distance_from_Home, data.Gender, data.Exam_Score
     ]])
 
-    prediction = model.predict(input_data)
-    return {"predicted_score": prediction[0]}
+    # Scale the input data
+    input_data_scaled = scaler.transform(input_data)
+
+    # Predict performance with the refined model
+    prediction = model.predict(input_data_scaled)
+
+    # Reverse scale the prediction to match the original range (50-100)
+    prediction_final = score_scaler.inverse_transform(prediction.reshape(-1, 1)).flatten()
+
+    return {"predicted_score": prediction_final[0]}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")

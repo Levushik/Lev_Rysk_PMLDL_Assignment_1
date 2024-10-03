@@ -70,7 +70,7 @@ mse = mean_squared_error(y_test, y_pred)
 print(f"Test Set Mean Squared Error: {mse}")
 
 # Save the trained model and label encoders
-model_save_path = os.path.join(os.path.dirname(__file__), '../../models/')
+model_save_path = os.path.join(os.path.dirname(__file__), '../models')
 joblib.dump(best_catboost, os.path.join(model_save_path, 'catboost_student_performance_model.pkl'))
 joblib.dump(label_encoders, os.path.join(model_save_path, 'label_encoders.pkl'))
 

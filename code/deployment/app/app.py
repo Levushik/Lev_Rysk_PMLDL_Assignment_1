@@ -7,29 +7,32 @@ API_URL = "http://api:8000/predict"
 # Streamlit app UI
 st.title("Student Performance Prediction")
 
+st.write("This app predicts a student's performance based on several factors.")
+
 # Define input fields for the model
-hours_studied = st.number_input("Hours Studied", min_value=0, max_value=24, step=1)
-attendance = st.number_input("Attendance", min_value=0, max_value=100, step=1)
-parental_involvement = st.number_input("Parental Involvement", min_value=0, max_value=100, step=1)
-access_to_resources = st.number_input("Access to Resources", min_value=0, max_value=100, step=1)
-extracurricular_activities = st.number_input("Extracurricular Activities", min_value=0, max_value=100, step=1)
-sleep_hours = st.number_input("Sleep Hours", min_value=0, max_value=24, step=1)
-motivation_level = st.number_input("Motivation Level", min_value=0, max_value=100, step=1)
-internet_access = st.number_input("Internet Access", min_value=0, max_value=100, step=1)
-tutoring_sessions = st.number_input("Tutoring Sessions", min_value=0, max_value=100, step=1)
-family_income = st.number_input("Family Income", min_value=0, max_value=100, step=1)
-teacher_quality = st.number_input("Teacher Quality", min_value=0, max_value=100, step=1)
-school_type = st.number_input("School Type", min_value=0, max_value=1, step=1)
-peer_influence = st.number_input("Peer Influence", min_value=0, max_value=100, step=1)
-physical_activity = st.number_input("Physical Activity", min_value=0, max_value=100, step=1)
-learning_disabilities = st.number_input("Learning Disabilities", min_value=0, max_value=1, step=1)
-parental_education_level = st.number_input("Parental Education Level", min_value=0, max_value=100, step=1)
-distance_from_home = st.number_input("Distance from Home", min_value=0, max_value=100, step=1)
-gender = st.number_input("Gender", min_value=0, max_value=1, step=1)
-exam_score = st.number_input("Exam Score", min_value=0, max_value=100, step=1)
+hours_studied = st.slider("Hours Studied (1-24)", min_value=1, max_value=24, value=6)
+attendance = st.slider("Attendance (%)", min_value=60, max_value=100, value=80)
+parental_involvement = st.slider("Parental Involvement (0-100)", min_value=0, max_value=100, value=50)
+access_to_resources = st.selectbox("Access to Resources", options=[0, 1], format_func=lambda x: "High" if x == 1 else "Low")
+extracurricular_activities = st.selectbox("Extracurricular Activities", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
+sleep_hours = st.slider("Sleep Hours (4-9)", min_value=4, max_value=9, value=7)
+motivation_level = st.slider("Motivation Level (0-100)", min_value=0, max_value=100, value=70)
+internet_access = st.selectbox("Internet Access", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
+tutoring_sessions = st.slider("Tutoring Sessions (0-5)", min_value=0, max_value=5, value=1)
+family_income = st.slider("Family Income (scaled 0-100)", min_value=0, max_value=100, value=50)
+teacher_quality = st.slider("Teacher Quality (0-100)", min_value=0, max_value=100, value=75)
+school_type = st.selectbox("School Type", options=[0, 1], format_func=lambda x: "Public" if x == 0 else "Private")
+peer_influence = st.slider("Peer Influence (0-100)", min_value=0, max_value=100, value=50)
+physical_activity = st.slider("Physical Activity Level (0-5)", min_value=0, max_value=5, value=2)
+learning_disabilities = st.selectbox("Learning Disabilities", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
+parental_education_level = st.slider("Parental Education Level (0-100)", min_value=0, max_value=100, value=60)
+distance_from_home = st.slider("Distance from Home (0-100)", min_value=0, max_value=100, value=30)
+gender = st.selectbox("Gender", options=[0, 1], format_func=lambda x: "Male" if x == 0 else "Female")
+exam_score = st.slider("Exam Score (55-85)", min_value=55, max_value=85, value=70)
 
 # Prediction button
 if st.button("Predict Performance"):
+    # Prepare input data as a dictionary
     input_data = {
         "Hours_Studied": hours_studied,
         "Attendance": attendance,
@@ -57,4 +60,4 @@ if st.button("Predict Performance"):
     result = response.json()
 
     # Display prediction result
-    st.success(f"Predicted Performance: {result['predicted_score']}")
+    st.success(f"Predicted Performance: {result['predicted_score']:.2f}")
